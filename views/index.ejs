@@ -8,5 +8,19 @@
 <body>
     <h1>Message Board</h1>
     <p>This is a mini message board to share your thoughts with other users</p>
+
+    <% messages.forEach((item) => { %>
+    <article>
+        <p><%= item.text %></p>
+        <p>Posted by <%= item.user %></p>
+
+        <time datetime="<%= item.added.toISOString() %>">
+        <%= item.added.toLocaleString("en-US", {
+            dateStyle: "medium",
+            timeStyle: "short"
+        }) %>
+        </time>
+    </article>
+    <% }); %>
 </body>
 </html>
