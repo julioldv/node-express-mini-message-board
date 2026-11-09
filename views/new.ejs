@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Message | Mini Message Board</title>
+</head>
+<body>
+    <h1>New message form</h1>
+
+    <form action="/new" method="POST">
+        <label for="user">Author: </label>
+        <input type="text" name="user" id="user" required>
+        <label for="text">Message: </label>
+        <textarea name="text" id="text"></textarea required>
+        <button type="submit">Submit</button>
+        <a href="/">Back to home</a>
+    </form>
+
+</body>
+</html>

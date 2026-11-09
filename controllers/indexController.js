@@ -4,4 +4,8 @@ function getMessages(req, res){
     res.render("index",{messages})
 }
 
-export {getMessages};
+function getNewMessageForm(req,res){
+    res.render("new");
+}
+
+export {getMessages, getNewMessageForm};
