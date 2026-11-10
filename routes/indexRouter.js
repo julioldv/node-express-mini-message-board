@@ -29,5 +29,6 @@ const indexRouter = Router();
 indexRouter.get("/", indexController.getMessages);
 indexRouter.get("/new", indexController.getNewMessageForm);
 indexRouter.post("/new", validateMessage, indexController.createMessage);
+indexRouter.get("/messages/:messageId", indexController.getMessageById);
 
 export {indexRouter};

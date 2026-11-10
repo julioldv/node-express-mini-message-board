@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Message by <%= message.user %> | Mini Message Board</title>
+</head>
+<body>
+    <main>
+    <h1>Message details</h1>
+
+        <article>
+            <p><%= message.text %></p>
+            <p>Posted by <%= message.user %></p>
+
+            <time datetime="<%= message.added.toISOString() %>">
+            <%= message.added.toLocaleString("en-US", {
+                dateStyle: "medium",
+                timeStyle: "short"
+            }) %>
+            </time>
+        </article>
+
+    <a href="/">Back to home</a>
+    </main>
+</body>
+</html>

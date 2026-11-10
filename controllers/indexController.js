@@ -1,4 +1,5 @@
 import { text } from "express";
+import { randomUUID } from "node:crypto";
 import { messages } from "../data/messages.js";
 import { validationResult } from "express-validator";
 
@@ -32,6 +33,7 @@ function createMessage(req, res) {
   const { user, text } = req.body;
 
   messages.push({
+    id: crypto.randomUUID(),
     text,
     user,
     added: new Date(),
@@ -39,4 +41,17 @@ function createMessage(req, res) {
 
   return res.redirect(303, "/");
 }
-export {getMessages, getNewMessageForm, createMessage};
+
+function getMessageById(req,res){
+
+    const requestedId = req.params.messageId;
+    const message = messages.find((msg) => msg.id === requestedId);
+    
+    if(!message){
+        return res.status(404).send("Message not found");
+    }
+
+    res.render("message", { message });
+}
+
+export {getMessages, getNewMessageForm, createMessage, getMessageById};
