@@ -5,17 +5,23 @@ import { body } from "express-validator";
 const validateMessage = [
     body("user")
      .isString()
-     .withMessage("User must be a text")
+     .withMessage("Author must be text")
+     .bail()
      .trim()
      .notEmpty()
-     .withMessage("User can't be empty"),
+     .withMessage("User can't be empty")
+     .isLength({max: 50})
+     .withMessage("Author must be at most 50 characters"),
     
     body("text")
      .isString()
-     .withMessage("Message must be a text")
+     .withMessage("Message must be text")
+     .bail()
      .trim()
      .notEmpty()
-     .withMessage("Message can't be empty"),
+     .withMessage("Message cannot be empty")
+     .isLength({max: 1000})
+     .withMessage("Message must be at most 1000 characters"),
 ];
 
 const indexRouter = Router();
