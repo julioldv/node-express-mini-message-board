@@ -3,26 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/styles.css">
     <title>Mini Message Board</title>
 </head>
 <body>
+<main class="container">
+  <header class="page-header">
     <h1>Message Board</h1>
-    <p>This is a mini message board to share your thoughts with other users</p>
+    <p class="subtitle">
+      A little space to share your thoughts.
+    </p>
 
+    <a class="button" href="/new">
+      + New message
+    </a>
+  </header>
+
+  <section class="message-list" aria-label="Messages">
     <% messages.forEach((item) => { %>
-    <article>
-        <p><%= item.text %></p>
-        <p>Posted by <%= item.user %></p>
+      <article class="message-card">
+        <div class="message-header">
+          <span class="message-author">
+            <%= item.user %>
+          </span>
 
-        <time datetime="<%= item.added.toISOString() %>">
-        <%= item.added.toLocaleString("en-US", {
-            dateStyle: "medium",
-            timeStyle: "short"
-        }) %>
-        </time>
-        <a href="/messages/<%= item.id %>">Open</a>
-    </article>
+          <time
+            class="message-date"
+            datetime="<%= item.added.toISOString() %>"
+          >
+            <%= item.added.toLocaleString("en-US", {
+              dateStyle: "medium",
+              timeStyle: "short"
+            }) %>
+          </time>
+        </div>
+
+        <p class="message-text"><%= item.text %></p>
+
+        <a href="/messages/<%= item.id %>">
+          Open message
+        </a>
+      </article>
     <% }); %>
-    <a href="/new">Write a new message</a>
+  </section>
+</main>
 </body>
 </html>

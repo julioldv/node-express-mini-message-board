@@ -3,25 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/styles.css">
     <title>Message by <%= message.user %> | Mini Message Board</title>
 </head>
 <body>
-    <main>
-    <h1>Message details</h1>
+    <main class="container">
+    <header class="page-header">
+        <h1>Message details</h1>
+    </header>
 
-        <article>
-            <p><%= message.text %></p>
-            <p>Posted by <%= message.user %></p>
+    <article class="message-card">
+        <div class="message-header">
+        <span class="message-author">
+            <%= message.user %>
+        </span>
 
-            <time datetime="<%= message.added.toISOString() %>">
+        <time
+            class="message-date"
+            datetime="<%= message.added.toISOString() %>"
+        >
             <%= message.added.toLocaleString("en-US", {
-                dateStyle: "medium",
-                timeStyle: "short"
+            dateStyle: "medium",
+            timeStyle: "short"
             }) %>
-            </time>
-        </article>
+        </time>
+        </div>
 
-    <a href="/">Back to home</a>
+        <p class="message-text"><%= message.text %></p>
+    </article>
+
+    <a class="back-link" href="/">Back to messages</a>
     </main>
 </body>
 </html>
