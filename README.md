@@ -4,6 +4,14 @@ A simple server-rendered message board built with **Node.js, Express, EJS, and P
 
 Users can view messages, submit new ones, and open individual message pages. Messages are stored persistently in PostgreSQL, with server-side input validation and parameterized SQL queries.
 
+## Live Demo
+
+The application is deployed on Render.
+
+[View the live application](https://mini-message-board-yrj7.onrender.com/)
+
+**Note:** The demo uses a temporary database on Render's Free plan, so availability and stored data may be affected by the hosting plan's limitations.
+
 ## Features
 
 - View messages with their author, content, and creation timestamp.
