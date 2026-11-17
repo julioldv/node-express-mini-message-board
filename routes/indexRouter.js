@@ -1,6 +1,7 @@
 import { Router } from "express";
 import * as indexController from "../controllers/indexController.js";
 import { body } from "express-validator";
+import { param } from "express-validator";
 
 const validateMessage = [
     body("user")
@@ -29,6 +30,6 @@ const indexRouter = Router();
 indexRouter.get("/", indexController.getMessages);
 indexRouter.get("/new", indexController.getNewMessageForm);
 indexRouter.post("/new", validateMessage, indexController.createMessage);
-indexRouter.get("/messages/:messageId", indexController.getMessageById);
+indexRouter.get("/messages/:messageId", param("messageId").isUUID(), indexController.getMessageById);
 
 export {indexRouter};

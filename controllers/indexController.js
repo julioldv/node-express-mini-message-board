@@ -1,10 +1,13 @@
-import { text } from "express";
-import { randomUUID } from "node:crypto";
-import { messages } from "../data/messages.js";
 import { validationResult } from "express-validator";
+import {
+    getAllMessages,
+    getMessageById as getMessageByIdDB,
+    createMessage as createMessageDB
+} from "../db/queries.js";
 
-function getMessages(req, res){
-    res.render("index",{messages})
+async function getMessages(req, res){
+    const messages = await getAllMessages();
+    res.render("index",{messages});
 }
 
 function getNewMessageForm(req,res){
@@ -17,7 +20,7 @@ function getNewMessageForm(req,res){
     });
 }
 
-function createMessage(req, res) {
+async function createMessage(req, res) {
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {
@@ -32,26 +35,30 @@ function createMessage(req, res) {
 
   const { user, text } = req.body;
 
-  messages.push({
-    id: crypto.randomUUID(),
+  const messageData = {
+    author: user,
     text,
-    user,
-    added: new Date(),
-  });
+  };
+
+  await createMessageDB(messageData);
 
   return res.redirect(303, "/");
 }
 
-function getMessageById(req,res){
+async function getMessageById(req, res) {
+    const errors = validationResult(req);
 
-    const requestedId = req.params.messageId;
-    const message = messages.find((msg) => msg.id === requestedId);
-    
-    if(!message){
+    if (!errors.isEmpty()) {
         return res.status(404).send("Message not found");
     }
 
-    res.render("message", { message });
-}
+    const requestedId = req.params.messageId;
+    const message = await getMessageByIdDB(requestedId);
 
+    if (!message) {
+        return res.status(404).send("Message not found");
+    }
+
+    return res.render("message", { message });
+}
 export {getMessages, getNewMessageForm, createMessage, getMessageById};

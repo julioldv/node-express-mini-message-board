@@ -1,17 +1,19 @@
 # Mini Message Board
 
-A simple server-rendered message board built with **Node.js, Express, and EJS** as part of [The Odin Project](https://www.theodinproject.com/)'s Node.js curriculum.
+A simple server-rendered message board built with **Node.js, Express, EJS, and PostgreSQL** as part of [The Odin Project](https://www.theodinproject.com/)'s Node.js curriculum.
 
-Users can view messages, submit new ones, and open individual message pages. The application uses an in-memory data store and server-side validation to handle form submissions.
+Users can view messages, submit new ones, and open individual message pages. Messages are stored persistently in PostgreSQL, with server-side input validation and parameterized SQL queries.
 
 ## Features
 
-- View messages with their author, content, and timestamp.
+- View messages with their author, content, and creation timestamp.
 - Submit new messages through an HTML form.
-- Validate and sanitize user input using `express-validator`.
+- Persist messages in a PostgreSQL database.
+- Validate and normalize user input using `express-validator`.
 - Display validation errors while preserving previously entered form values.
 - Open individual messages through unique UUID-based URLs.
-- Handle nonexistent messages with HTTP 404 responses.
+- Return HTTP 404 responses for invalid or nonexistent message IDs.
+- Use parameterized SQL queries for database operations.
 - Redirect after successful form submissions using the Post/Redirect/Get pattern.
 
 ## Tech Stack
@@ -19,15 +21,19 @@ Users can view messages, submit new ones, and open individual message pages. The
 - **Node.js** — JavaScript runtime
 - **Express** — Web server, routing, and middleware
 - **EJS** — Server-side HTML templates
-- **express-validator** — Input validation and sanitization
-- **HTML** — Page structure and forms
+- **PostgreSQL** — Relational database for persistent storage
+- **node-postgres (`pg`)** — PostgreSQL client and connection pooling
+- **express-validator** — Server-side input validation and normalization
+- **HTML and CSS** — Page structure and styling
 
 ## Getting Started
 
 ### Prerequisites
 
-- Node.js (a recent version supporting `import.meta.dirname`)
+- Node.js 20.11+ (supporting `import.meta.dirname` and `--env-file`)
 - npm
+- PostgreSQL installed and running
+- A PostgreSQL role with permission to create and access a database
 
 ### Installation
 
@@ -35,7 +41,7 @@ Users can view messages, submit new ones, and open individual message pages. The
 
    ```bash
    git clone https://github.com/julioldv/node-express-mini-message-board.git
-   cd mini-message-board
+   cd node-express-mini-message-board
    ```
 
 2. Install dependencies:
@@ -44,13 +50,39 @@ Users can view messages, submit new ones, and open individual message pages. The
    npm ci
    ```
 
-3. Start the development server:
+3. Create the PostgreSQL database:
 
    ```bash
-   npm run dev
+   createdb mini_message_board
    ```
 
-4. Open your browser at:
+4. Initialize the database schema:
+
+   ```bash
+   psql -d mini_message_board -f db/schema.sql
+   ```
+
+5. Create a `.env` file in the project root and configure your PostgreSQL connection:
+
+   ```dotenv
+   PGHOST=localhost
+   PGPORT=5432
+   PGDATABASE=mini_message_board
+   PGUSER=your_postgresql_role
+   PGPASSWORD=your_postgresql_password
+   ```
+
+   Replace the placeholder values with your local PostgreSQL credentials.
+
+   The `.env` file is excluded from version control to prevent committing database credentials.
+
+6. Start the development server:
+
+   ```bash
+   node --env-file=.env --watch app.js
+   ```
+
+7. Open your browser at:
 
    http://localhost:3000
 
@@ -60,6 +92,8 @@ Users can view messages, submit new ones, and open individual message pages. The
 |---|---|
 | `npm run dev` | Starts the server in watch mode |
 | `npm start` | Starts the server normally |
+
+When using the local `.env` file, load it explicitly with Node.js's `--env-file=.env` option, as shown above.
 
 The server uses port `3000` by default. You can override it by setting the `PORT` environment variable.
 
@@ -75,17 +109,21 @@ The server uses port `3000` by default. You can override it by setting the `PORT
 ## Project Structure
 
 ```text
-mini-message-board/
+node-express-mini-message-board/
 ├── controllers/
 │   └── indexController.js
-├── data/
-│   └── messages.js
+├── db/
+│   ├── pool.js
+│   ├── queries.js
+│   └── schema.sql
 ├── routes/
 │   └── indexRouter.js
 ├── views/
 │   ├── index.ejs
 │   ├── new.ejs
 │   └── message.ejs
+├── public/
+│   └── styles.css
 ├── app.js
 ├── package.json
 └── README.md
@@ -93,14 +131,25 @@ mini-message-board/
 
 ## Data Storage
 
-Messages are stored in an in-memory JavaScript array. Each message contains:
+Messages are stored in a PostgreSQL database rather than an in-memory JavaScript array.
 
-- A unique UUID
-- The author's name
-- The message content
-- A creation timestamp
+Each message contains:
 
-**Data is not persisted.** Messages added by users are lost when the server restarts, and the initial sample messages are recreated.
+- `id` — A unique UUID identifying the message
+- `author` — The name of the person who submitted it
+- `text` — The message content
+- `added` — A timestamp indicating when the message was created
+
+The database schema is defined in `db/schema.sql`.
+
+Database access is organized into two modules:
+
+- **`db/pool.js`** — Configures a reusable PostgreSQL connection pool.
+- **`db/queries.js`** — Contains functions for retrieving and creating messages using SQL queries.
+
+The application uses parameterized queries to safely pass values to PostgreSQL.
+
+**Messages persist across application restarts.** Unlike the original in-memory implementation, stored messages are not lost when the Node.js process stops.
 
 ## What I Learned
 
@@ -109,11 +158,18 @@ This project helped me practice:
 - Organizing an Express application using routers and controllers.
 - Rendering dynamic HTML with EJS.
 - Processing HTML form submissions with Express middleware.
-- Validating and sanitizing untrusted user input.
+- Validating and normalizing untrusted user input.
 - Handling validation errors in server-rendered forms.
 - Using dynamic route parameters and UUIDs to identify resources.
 - Applying the Post/Redirect/Get pattern after successful submissions.
+- Designing and creating tables in PostgreSQL.
+- Connecting Node.js applications to PostgreSQL using `pg`.
+- Managing database connections with a connection pool.
+- Executing asynchronous database queries with `async/await`.
+- Writing parameterized SQL queries to prevent SQL injection.
+- Separating database-access logic from Express controllers.
+- Migrating an application from in-memory storage to persistent database storage.
 
 ## Acknowledgments
 
-Built as part of [The Odin Project — Mini Message Board](https://www.theodinproject.com/lessons/node-path-nodejs-mini-message-board) assignment.
+Built as part of The Odin Project's [Mini Message Board](https://www.theodinproject.com/lessons/node-path-nodejs-mini-message-board) and [Using PostgreSQL](https://www.theodinproject.com/lessons/nodejs-using-postgresql) assignments.
